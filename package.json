@@ -1,0 +1,17 @@
+{
+  "name": "simple-chat",
+  "version": "0.0.1",
+  "description": "Simple Chat Application built on Socket.io",
+  "main": "server.js",
+  "repository": "https://github.com/wesleylhandy/simple-cht",
+  "author": "Wesley L. Handy",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon server"
+  },
+  "dependencies": {
+    "express": "^4.15.3",
+    "mattboldt.typed.js": "^1.1.4",
+    "socket.io": "^2.0.1"
+  }
+}
