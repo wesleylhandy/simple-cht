@@ -22,11 +22,11 @@
       #m { border-radius: 5px; border: 0; padding: 10px; width: 90%; margin-right: .5%; }
       #message-input button { width: 9%; background: rgb(130, 224, 255); border-radius: 5px; border: none; padding: 10px; }
       #messages { list-style-type: none; margin: 0; padding: 0;}
-      #messages li { padding: 5px 10px; background: rgba(255, 224, 130, 0.5)}
+      #messages li { padding: 5px 10px; background: rgba(255, 224, 130, 0.5); display: flex; flex-direction: row; justify-content: space-between;}
       #messages li:nth-child(odd) { background: rgba(130, 255, 224, 0.5); }
-      #messages li:after {clear: right;}
-      .user {color: blue; float: right;}
-      .timestamp {color: red; float: right;}
+      .user {color: blue;}
+      .timestamp {color: red;}
+      .user-window {position: fixed; top: 15px; right: 15px; border: 5px solid black; border-radius: 15px; padding: 5px; background: white; text-align: center; }
     </style>
   </head>
   <body>
@@ -52,6 +52,11 @@
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
 
+  </div>
+
+  <div class='user-window'>
+    <h4 style='text-decoration: underline;'>Users</h4>
+    <div class='online'>1</div>
   </div>
 
   <script
@@ -99,11 +104,13 @@
         //future: username validation. keep track of all users in the room and don't allow duplicates
 
         socket.emit('chat message', JSON.stringify({message: `${userName} just joined the chat`, timeStamp:timeStamp, user: userName}));
+
+        socket.emit('new user', userName);
         
         $('.modal').hide();
         $('.welcome').show();
          var options = {
-            strings: [`Welcome ^200 ${userName}`, 'to', "S1mpl3 Ch@t"],
+            strings: [`Welcome ^200 ${userName}`, 'to', "S1mpl3 Ch@t", `Ch@tt1ng 4s ${userName}`],
             showCursor: false,
             typeSpeed: 2
         }
@@ -127,20 +134,33 @@
 
       socket.on('chat message', function(msg){
         msg = JSON.parse(msg);
-        let textDirection = msg.user === userName ? 'right' : 'left';
-        userName = msg.user === userName ? 'You' : userName;
-        if(usersOnline.indexOf(userName) < 0) {
-          usersOnline.push(userName);
-          updateUsersOnline(userName);
-        }
-        $('#messages').prepend($('<li>')
-          .html(`<span class='message' style='text-align:${textDirection}'>${msg.message}</span>
-                  <span class='timestamp'>${msg.timeStamp}</span>
-                  <span class='user'>${userName} -&nbsp</span>`));
+        console.log(msg);
+        let textDirection = msg.user === userName ? 'row-reverse' : 'row';
+        let user = msg.user === userName ? 'You' : msg.user;
+
+        $('#messages').prepend($(`<li style="flex-direction: ${textDirection}">`)
+          .html(`<span class='message'>${msg.message}</span>
+                  <span class='msg-data'>
+                    <span class='user'>${user} -&nbsp</span>
+                    <span class='timestamp'>${msg.timeStamp}</span>
+                  </span>`));
       });
 
-      function updateUsersOnline(user) {
+      socket.on('user added', function(num) {
+        updateUsersOnline(num);
+      })
 
+      socket.on('user left', function(num) {
+        updateUsersOnline(num);
+      });
+
+      socket.on('users online', function(num){
+        updateUsersOnline(num);
+      })  
+
+      function updateUsersOnline(num) {
+        console.log(num);
+        $(".online").text(num);
       }
     });
   </script>

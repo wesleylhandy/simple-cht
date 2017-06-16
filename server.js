@@ -11,9 +11,16 @@ app.get('/', function(req, res){
 
 app.use(express.static(__dirname + '/'))
 
+let thisUser;
+
 //log activity, for now just to console, but can be stored in a file if needed
 io.on('connection', function(socket){
-  console.log('a user connected');
+  socket.on('new user', function(user) {
+    //validate user??
+    thisUser = user;
+    console.log(`${thisUser} joined`);
+    io.emit('user added', Object.keys(io.sockets.sockets).length);
+  });
 
   socket.on('chat message', function(msg){
   	console.log('message: ' + msg);
@@ -21,8 +28,11 @@ io.on('connection', function(socket){
   });
 
   socket.on('disconnect', function(){
-    console.log('user disconnected');
+    console.log(`${thisUser} disconnected`);
+    io.emit('user left', Object.keys(io.sockets.sockets).length);
   });
+
+
 });
 
 http.listen(PORT, function(){
