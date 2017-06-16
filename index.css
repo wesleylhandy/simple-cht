@@ -94,7 +94,7 @@ h3 {
       margin-top: 5%; 
       border-radius: 20px; 
       border: 2px solid var(--dark);
-      box-shadow: 0 0 5px var(--darker);
+      box-shadow: 0 0 15px var(--darker);
       position: relative;
       overflow: auto;
 }
